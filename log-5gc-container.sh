@@ -3,14 +3,9 @@
 function_name=$1
 container_name=$2
 echo "Function name: $function_name"
+echo "Conainer name: $container_name"
 
-shell=""
-if [[ $function_name == "amf" || $function_name == "smf" || $function_name == "smf2" ]]; then
-    shell=ash
-else
-    shell=bash
-fi
-
+# shell pod name
 if [[ $function_name == "gnb" || $function_name == "ue" ]]; then
     pod_name=$(kubectl get pods | egrep -i -o "ueransim-$function_name-[a-z0-9]+-[a-z0-9]+")
 else
@@ -18,9 +13,8 @@ else
 fi
 
 if [[ -z $container_name ]]; then
-    echo "Using shell $shell for pod $pod_name"
-    kubectl exec -it $pod_name -- $shell
+    kubectl logs -f $pod_name
 else
-    echo "Using shell $shell for pod $pod_name container $container_name"
-    kubectl exec -it $pod_name -c $container_name -- $shell
+    kubectl logs -f $pod_name -c $container_name
 fi
+
